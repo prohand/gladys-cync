@@ -4,7 +4,11 @@ All notable changes to this integration are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [semantic versioning](https://semver.org/), bumped by the Release workflow.
 
-Describe each change under `## [Unreleased]` as you make it. The Release
+Describe each change under `## [Unreleased]
+
+## [1.0.1] - 2026-10-21
+
+` as you make it. The Release
 workflow moves that section under the version it ships, and the section becomes
 the notes of the version's GitHub Release.
 
@@ -29,4 +33,5 @@ the notes of the version's GitHub Release.
 - CI (format, lint, tests on Node 22 and 24, store checks, Docker build),
   UI-driven Release workflow, GitHub Releases and Dependabot.
 
-[Unreleased]: https://github.com/prohand/gladys-cync/commits/main
+[Unreleased]: https://github.com/prohand/gladys-cync/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/prohand/gladys-cync/releases/tag/v1.0.1

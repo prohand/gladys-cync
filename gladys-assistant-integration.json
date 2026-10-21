@@ -8,8 +8,8 @@
     "de": "Steuere Cync-Lampen (GE Lighting), LED-Streifen, Schalter und Steckdosen mit Gladys.",
     "es": "Controle bombillas, tiras LED, interruptores y enchufes Cync (GE Lighting) desde Gladys."
   },
-  "version": "1.0.0",
-  "docker_image": "ghcr.io/prohand/gladys-cync:1.0.0",
+  "version": "1.0.1",
+  "docker_image": "ghcr.io/prohand/gladys-cync:1.0.1",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/prohand/gladys-cync/main/cover.png",
   "categories": ["lighting"],
@@ -197,7 +197,12 @@
           "key": "device",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Sensor", "fr": "Capteur", "de": "Sensor", "es": "Sensor" },
+          "label": {
+            "en": "Sensor",
+            "fr": "Capteur",
+            "de": "Sensor",
+            "es": "Sensor"
+          },
           "required": false
         }
       ]
@@ -221,13 +226,23 @@
           "key": "device",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil", "de": "Gerät", "es": "Dispositivo" },
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          },
           "required": false
         },
         {
           "key": "status",
           "type": "multi_select",
-          "label": { "en": "Change", "fr": "Changement", "de": "Änderung", "es": "Cambio" },
+          "label": {
+            "en": "Change",
+            "fr": "Changement",
+            "de": "Änderung",
+            "es": "Cambio"
+          },
           "options": [
             {
               "value": "offline",
@@ -296,17 +311,32 @@
         {
           "key": "power",
           "type": "select",
-          "label": { "en": "Power", "fr": "Allumage", "de": "Schalten", "es": "Encendido" },
+          "label": {
+            "en": "Power",
+            "fr": "Allumage",
+            "de": "Schalten",
+            "es": "Encendido"
+          },
           "required": true,
           "default": "on",
           "options": [
             {
               "value": "on",
-              "label": { "en": "On", "fr": "Allumer", "de": "Ein", "es": "Encender" }
+              "label": {
+                "en": "On",
+                "fr": "Allumer",
+                "de": "Ein",
+                "es": "Encender"
+              }
             },
             {
               "value": "off",
-              "label": { "en": "Off", "fr": "Éteindre", "de": "Aus", "es": "Apagar" }
+              "label": {
+                "en": "Off",
+                "fr": "Éteindre",
+                "de": "Aus",
+                "es": "Apagar"
+              }
             }
           ]
         },
@@ -398,7 +428,12 @@
   "widgets": [
     {
       "key": "cync_status",
-      "label": { "en": "Cync status", "fr": "État Cync", "de": "Cync-Status", "es": "Estado Cync" },
+      "label": {
+        "en": "Cync status",
+        "fr": "État Cync",
+        "de": "Cync-Status",
+        "es": "Estado Cync"
+      },
       "description": {
         "en": "Cloud connection, devices online and the Wi-Fi relay of each home.",
         "fr": "Connexion au cloud, appareils en ligne et relais Wi-Fi de chaque maison.",
@@ -427,7 +462,12 @@
         {
           "key": "show",
           "type": "select",
-          "label": { "en": "Show", "fr": "Afficher", "de": "Anzeigen", "es": "Mostrar" },
+          "label": {
+            "en": "Show",
+            "fr": "Afficher",
+            "de": "Anzeigen",
+            "es": "Mostrar"
+          },
           "required": false,
           "default": "all",
           "options": [

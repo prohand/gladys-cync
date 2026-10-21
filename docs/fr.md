@@ -1,0 +1,169 @@
+# Cync
+
+Cette intégration relie Gladys à votre compte **Cync** (anciennement **C by
+GE**, GE Lighting) : ampoules, rubans LED, spots, interrupteurs et variateurs
+muraux, prises connectées et le contrôleur de ventilateur installés dans
+l'application Cync.
+
+## Avant de commencer
+
+- Vos appareils s'installent dans l'**application mobile Cync**, pas dans
+  Gladys. Vérifiez d'abord qu'ils y fonctionnent.
+- Chaque maison a besoin d'**au moins un appareil Cync Wi-Fi** toujours
+  alimenté : une ampoule Wi-Fi, une prise, un interrupteur. Les ampoules
+  Bluetooth seules passent par lui.
+- Gladys doit avoir accès à internet : les appareils Cync se pilotent **via le
+  cloud Cync** (voir [Cloud uniquement](#cloud-uniquement)).
+
+## Configuration
+
+| Champ                                    | Que saisir                                                                                                  |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Email du compte Cync**                 | L'email avec lequel vous vous connectez à l'application Cync.                                               |
+| **Mot de passe du compte Cync**          | Son mot de passe. Gardé par Gladys comme un secret, jamais écrit dans les logs.                             |
+| **Ajouter les pièces Cync comme lampes** | Activé par défaut : chaque pièce de l'application Cync devient aussi une lampe dans Gladys (voir plus bas). |
+| **Relecture complète des états (s)**     | 300 par défaut. Les changements arrivent en direct ; cette relecture repère les appareils hors ligne.       |
+| **Logs détaillés**                       | Désactivé par défaut. À activer seulement pour diagnostiquer un appareil : chaque trame est journalisée.    |
+
+## Connexion : le code de vérification
+
+Cync protège en général le compte par un code envoyé par email. La connexion
+se fait en trois clics, une seule fois :
+
+1. Renseignez l'email et le mot de passe, puis **Enregistrer**. Le statut
+   indique qu'un code est requis.
+2. Cliquez sur **Envoyer un code de vérification**. Cync envoie un code à
+   l'adresse du compte.
+3. Cliquez sur **Valider le code**, saisissez le code, confirmez.
+
+La réponse indique combien d'appareils ont été trouvés, et le statut passe à
+**connecté**. L'intégration garde ensuite sa session dans son propre stockage :
+un redémarrage de Gladys ou de l'intégration ne redemande **pas** de code.
+
+Un nouveau code n'est nécessaire que si vous changez d'email, ou si Cync met
+fin à la session (après un changement de mot de passe, par exemple). Le statut
+le signale.
+
+## Appareils
+
+Une fois connecté, ouvrez l'onglet **Découverte** de l'intégration et ajoutez
+les appareils voulus.
+
+| Appareil Cync                         | Dans Gladys                                                        |
+| ------------------------------------- | ------------------------------------------------------------------ |
+| Ampoule, ruban, spot                  | Lampe : marche/arrêt, luminosité, blanc, couleur — selon le modèle |
+| Interrupteur / variateur mural        | Lampe : marche/arrêt (et luminosité pour un variateur)             |
+| Interrupteur à détecteur de mouvement | Lampe, plus un **capteur de mouvement**                            |
+| Prise, prise extérieure double        | Interrupteur (un appareil par prise)                               |
+| Contrôleur de ventilateur             | Interrupteur : marche/arrêt et vitesse (0–100 %)                   |
+| Pièce ou groupe de l'application Cync | Lampe : pilote toutes ses lampes d'un coup                         |
+
+La **température du blanc** va de 2000 K (chaud) à 7000 K (froid).
+
+Les caméras, thermostats et autres produits Cync ne sont pas pris en charge :
+ils sont ignorés, et les logs les nomment.
+
+### Les pièces
+
+Une pièce commande toutes ses lampes **en un seul ordre** : elles s'allument
+ensemble, au lieu de l'une après l'autre. Une pièce n'offre que ce que
+**toutes** ses lampes savent faire : une pièce qui mélange ampoules couleur et
+blanches n'a pas de réglage de couleur. Elle apparaît allumée dès qu'une de ses
+lampes l'est.
+
+Une pièce sans lampe (seulement des prises) n'est pas ajoutée. Désactivez
+**Ajouter les pièces Cync comme lampes** si vous ne voulez aucune pièce.
+
+### Le badge de connexion
+
+Chaque appareil Cync affiche un badge **cloud** tant que le cloud Cync
+l'atteint, et **injoignable** sinon : l'appareil n'est plus alimenté, il est
+hors de portée des autres appareils, ou l'intégration a perdu le cloud.
+
+## Actions
+
+Sur la page de l'intégration :
+
+- **Envoyer un code de vérification** / **Valider le code** : la connexion
+  ci-dessus.
+- **Tester la connexion** : relit tous les états et répond avec le nombre
+  d'appareils en ligne, et de maisons qui ont un relais Wi-Fi.
+- **Recharger la liste des appareils** : relit les maisons depuis le cloud
+  Cync, après avoir ajouté, renommé ou déplacé un appareil dans l'application
+  Cync.
+
+## Scènes et tableau de bord (Gladys 5.1+)
+
+### Déclencheurs de scène
+
+- **Un capteur Cync détecte un mouvement** : déclenché une fois par détection
+  d'un interrupteur ou capteur à détecteur de mouvement. Filtrez sur le
+  capteur, ou laissez vide pour tous.
+- **Un appareil Cync passe hors ligne ou en ligne** : le maillage Cync n'entend
+  plus un appareil (coupure de courant, interrupteur mural éteint) ou l'entend
+  de nouveau. Filtrez sur l'appareil et sur le changement ; les actions
+  suivantes lisent le changement dans la variable `status` (`online` ou
+  `offline`).
+
+### Actions de scène
+
+- **Régler une lampe Cync en une fois** : allumage, luminosité et température
+  du blanc en un **seul** ordre. Une lampe allumée ainsi va directement au
+  réglage voulu, sans d'abord flasher à son réglage précédent. Fonctionne aussi
+  pour les pièces. Sa sortie **Ordre envoyé** vaut faux quand la lampe n'a pas
+  pu être jointe : servez-vous-en comme condition si la suite de la scène en
+  dépend.
+- **Lire les états Cync maintenant** : demande à chaque maison l'état de ses
+  appareils. Sorties : **Appareils en ligne** et **Appareils au total**.
+
+### Widgets
+
+- **État Cync** : la connexion au cloud, les appareils en ligne, le relais
+  Wi-Fi de chaque maison, et deux boutons : **Lire les états** et
+  **Recharger**.
+- **Appareils Cync** : une ligne par appareil : allumé (avec sa luminosité),
+  éteint ou hors ligne. Le réglage **Afficher** la limite aux appareils
+  allumés, ou à ceux hors ligne — pratique après une coupure de courant.
+
+## Bon à savoir
+
+### Cloud uniquement
+
+Les appareils Cync n'ont pas d'API locale : l'application Cync elle-même les
+pilote via le cloud Cync. L'intégration fait de même, sur une connexion
+permanente :
+
+- vos ordres partent vers le cloud, qui les confie à un **appareil Wi-Fi de
+  votre maison** (le « relais »), qui les transmet aux autres appareils en
+  Bluetooth ;
+- chaque changement — depuis Gladys, l'application Cync, un interrupteur
+  mural, un assistant vocal — revient par le même chemin, en moins d'une
+  seconde.
+
+Sans internet, ou si le cloud Cync est en panne, Gladys ne peut donc plus
+piloter les appareils. L'intégration se reconnecte d'elle-même dès que
+possible.
+
+### Le certificat du serveur Cync
+
+Le serveur Cync présente un certificat expiré dont le nom ne correspond pas.
+L'intégration tente d'abord une vérification stricte ; si elle échoue, elle se
+connecte quand même, comme l'application Cync, et écrit un avertissement dans
+les logs. Les échanges restent chiffrés.
+
+### Ce qui est stocké
+
+L'intégration garde sa session Cync (des jetons, pas le mot de passe) dans son
+propre stockage, lisible par elle seule. Le mot de passe reste dans la
+configuration de Gladys.
+
+## Dépannage
+
+| Symptôme                                          | À vérifier                                                                                                                        |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| « Code requis » encore et encore                  | Utilisez **Envoyer un code de vérification**, puis **Valider le code** avec le dernier code : un code expire vite.                |
+| « Le cloud Cync a refusé ce code »                | Code erroné ou expiré, ou mauvais mot de passe : vérifiez le mot de passe, demandez un nouveau code.                              |
+| Tous les appareils d'une maison sont injoignables | Aucun appareil Cync Wi-Fi de cette maison n'est en ligne. Allumez-en un ; **Tester la connexion** montre les maisons sans relais. |
+| Un appareil est injoignable                       | Il n'est plus alimenté (interrupteur mural éteint ?) ou trop loin des autres. L'application Cync montre la même chose.            |
+| Un nouvel appareil n'apparaît pas                 | **Recharger la liste des appareils**, puis l'onglet **Découverte**.                                                               |
+| Un appareil ne réagit pas, les autres oui         | Activez **Logs détaillés**, réessayez, et regardez les logs de l'intégration (trames envoyées et reçues).                         |

@@ -1,0 +1,466 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "Cync",
+  "description": {
+    "en": "Control your Cync (GE Lighting) bulbs, light strips, switches and plugs from Gladys.",
+    "fr": "Pilotez ampoules, rubans LED, interrupteurs et prises Cync (GE Lighting) depuis Gladys.",
+    "de": "Steuere Cync-Lampen (GE Lighting), LED-Streifen, Schalter und Steckdosen mit Gladys.",
+    "es": "Controle bombillas, tiras LED, interruptores y enchufes Cync (GE Lighting) desde Gladys."
+  },
+  "version": "1.0.0",
+  "docker_image": "ghcr.io/prohand/gladys-cync:1.0.0",
+  "gladys_version": ">=5.1.0",
+  "cover_image": "https://raw.githubusercontent.com/prohand/gladys-cync/main/cover.png",
+  "categories": ["lighting"],
+  "transports": ["cloud"],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Getting started",
+        "fr": "Pour commencer",
+        "de": "Erste Schritte",
+        "es": "Primeros pasos"
+      },
+      "description": {
+        "en": "Sign in with the account of the Cync app. Cync usually asks for a code sent by email: save the form, click \"Send a verification code\", then \"Validate the code\". The lights are driven through the Cync cloud, so at least one Wi-Fi Cync device must be online in each home.",
+        "fr": "Connectez-vous avec le compte de l'application Cync. Cync demande en général un code envoyé par email : enregistrez le formulaire, cliquez sur « Envoyer un code de vérification », puis « Valider le code ». Les lampes sont pilotées via le cloud Cync : au moins un appareil Cync Wi-Fi doit être en ligne dans chaque maison.",
+        "de": "Melde dich mit dem Konto der Cync-App an. Cync verlangt meist einen per E-Mail gesendeten Code: Speichere das Formular, klicke auf „Bestätigungscode senden“ und dann auf „Code bestätigen“. Die Lampen werden über die Cync-Cloud gesteuert, daher muss in jedem Zuhause mindestens ein WLAN-fähiges Cync-Gerät online sein.",
+        "es": "Inicie sesión con la cuenta de la aplicación Cync. Cync suele pedir un código enviado por correo: guarde el formulario, pulse «Enviar un código de verificación» y luego «Validar el código». Las luces se controlan a través de la nube Cync, por lo que al menos un dispositivo Cync Wi-Fi debe estar en línea en cada hogar."
+      }
+    },
+    {
+      "key": "email",
+      "type": "string",
+      "label": {
+        "en": "Cync account email",
+        "fr": "Email du compte Cync",
+        "de": "E-Mail des Cync-Kontos",
+        "es": "Correo de la cuenta Cync"
+      },
+      "placeholder": {
+        "en": "e.g. name@example.com",
+        "fr": "ex. nom@exemple.fr",
+        "de": "z. B. name@beispiel.de",
+        "es": "p. ej. nombre@ejemplo.es"
+      },
+      "required": true
+    },
+    {
+      "key": "password",
+      "type": "secret",
+      "label": {
+        "en": "Cync account password",
+        "fr": "Mot de passe du compte Cync",
+        "de": "Passwort des Cync-Kontos",
+        "es": "Contraseña de la cuenta Cync"
+      },
+      "required": true
+    },
+    {
+      "key": "include_rooms",
+      "type": "boolean",
+      "label": {
+        "en": "Add the Cync rooms as lights",
+        "fr": "Ajouter les pièces Cync comme lampes",
+        "de": "Cync-Räume als Lampen hinzufügen",
+        "es": "Añadir las estancias Cync como luces"
+      },
+      "description": {
+        "en": "A room switches all its lights with one order, without the ripple of one order per bulb.",
+        "fr": "Une pièce allume toutes ses lampes d'un seul ordre, sans l'effet de vague d'un ordre par ampoule.",
+        "de": "Ein Raum schaltet alle seine Lampen mit einem Befehl, ohne den Welleneffekt eines Befehls pro Lampe.",
+        "es": "Una estancia enciende todas sus luces con una sola orden, sin el efecto ola de una orden por bombilla."
+      },
+      "required": false,
+      "default": true
+    },
+    {
+      "key": "state_refresh",
+      "type": "number",
+      "label": {
+        "en": "Full state read (s)",
+        "fr": "Relecture complète des états (s)",
+        "de": "Vollständiges Lesen der Zustände (s)",
+        "es": "Lectura completa de estados (s)"
+      },
+      "description": {
+        "en": "Changes arrive instantly; this periodic read only catches devices that went offline.",
+        "fr": "Les changements arrivent en direct ; cette relecture sert à repérer les appareils hors ligne.",
+        "de": "Änderungen kommen sofort an; dieses Lesen erkennt nur Geräte, die offline gegangen sind.",
+        "es": "Los cambios llegan al instante; esta lectura solo detecta los dispositivos desconectados."
+      },
+      "required": false,
+      "default": 300,
+      "min": 60,
+      "max": 3600
+    },
+    {
+      "key": "debug_logs",
+      "type": "boolean",
+      "label": {
+        "en": "Detailed logs",
+        "fr": "Logs détaillés",
+        "de": "Ausführliche Logs",
+        "es": "Registros detallados"
+      },
+      "description": {
+        "en": "Logs every frame exchanged with the Cync cloud, to diagnose a device. Leave it off otherwise.",
+        "fr": "Journalise chaque trame échangée avec le cloud Cync, pour diagnostiquer un appareil. Sinon, laissez désactivé.",
+        "de": "Protokolliert jeden mit der Cync-Cloud ausgetauschten Frame, um ein Gerät zu untersuchen. Sonst ausgeschaltet lassen.",
+        "es": "Registra cada trama intercambiada con la nube Cync, para diagnosticar un dispositivo. Si no, déjelo desactivado."
+      },
+      "required": false,
+      "default": false
+    }
+  ],
+  "actions": [
+    {
+      "key": "send_code",
+      "label": {
+        "en": "Send a verification code",
+        "fr": "Envoyer un code de vérification",
+        "de": "Bestätigungscode senden",
+        "es": "Enviar un código de verificación"
+      },
+      "timeout_seconds": 30
+    },
+    {
+      "key": "verify_code",
+      "label": {
+        "en": "Validate the code",
+        "fr": "Valider le code",
+        "de": "Code bestätigen",
+        "es": "Validar el código"
+      },
+      "timeout_seconds": 60,
+      "fields": [
+        {
+          "key": "code",
+          "type": "string",
+          "label": {
+            "en": "Code received by email",
+            "fr": "Code reçu par email",
+            "de": "Per E-Mail erhaltener Code",
+            "es": "Código recibido por correo"
+          },
+          "placeholder": {
+            "en": "e.g. 123456",
+            "fr": "ex. 123456",
+            "de": "z. B. 123456",
+            "es": "p. ej. 123456"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "timeout_seconds": 30
+    },
+    {
+      "key": "refresh_devices",
+      "label": {
+        "en": "Reload the device list",
+        "fr": "Recharger la liste des appareils",
+        "de": "Geräteliste neu laden",
+        "es": "Recargar la lista de dispositivos"
+      },
+      "timeout_seconds": 60
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "motion_detected",
+      "label": {
+        "en": "A Cync sensor detects motion",
+        "fr": "Un capteur Cync détecte un mouvement",
+        "de": "Ein Cync-Sensor erkennt Bewegung",
+        "es": "Un sensor Cync detecta movimiento"
+      },
+      "description": {
+        "en": "Fired once per detection by a Cync switch or sensor with a motion sensor.",
+        "fr": "Déclenché une fois par détection d'un interrupteur ou capteur Cync à détecteur de mouvement.",
+        "de": "Wird einmal pro Erkennung eines Cync-Schalters oder -Sensors mit Bewegungsmelder ausgelöst.",
+        "es": "Se activa una vez por detección de un interruptor o sensor Cync con detector de movimiento."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": { "en": "Sensor", "fr": "Capteur", "de": "Sensor", "es": "Sensor" },
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "device_connectivity",
+      "label": {
+        "en": "A Cync device goes offline or online",
+        "fr": "Un appareil Cync passe hors ligne ou en ligne",
+        "de": "Ein Cync-Gerät geht offline oder online",
+        "es": "Un dispositivo Cync se desconecta o se conecta"
+      },
+      "description": {
+        "en": "The Cync mesh stopped hearing a device (power cut, wall switch off) or hears it again.",
+        "fr": "Le maillage Cync n'entend plus un appareil (coupure, interrupteur mural éteint) ou l'entend de nouveau.",
+        "de": "Das Cync-Netz hört ein Gerät nicht mehr (Stromausfall, Wandschalter aus) oder hört es wieder.",
+        "es": "La malla Cync deja de oír un dispositivo (corte, interruptor de pared apagado) o lo vuelve a oír."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": { "en": "Device", "fr": "Appareil", "de": "Gerät", "es": "Dispositivo" },
+          "required": false
+        },
+        {
+          "key": "status",
+          "type": "multi_select",
+          "label": { "en": "Change", "fr": "Changement", "de": "Änderung", "es": "Cambio" },
+          "options": [
+            {
+              "value": "offline",
+              "label": {
+                "en": "Goes offline",
+                "fr": "Passe hors ligne",
+                "de": "Geht offline",
+                "es": "Se desconecta"
+              }
+            },
+            {
+              "value": "online",
+              "label": {
+                "en": "Comes back online",
+                "fr": "Revient en ligne",
+                "de": "Ist wieder online",
+                "es": "Vuelve a estar en línea"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "status",
+          "type": "string",
+          "label": {
+            "en": "Change (online / offline)",
+            "fr": "Changement (online / offline)",
+            "de": "Änderung (online / offline)",
+            "es": "Cambio (online / offline)"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "set_light",
+      "label": {
+        "en": "Set a Cync light in one go",
+        "fr": "Régler une lampe Cync en une fois",
+        "de": "Eine Cync-Lampe in einem Schritt einstellen",
+        "es": "Ajustar una luz Cync de una vez"
+      },
+      "description": {
+        "en": "Power, brightness and white temperature in a single order: no flash at the previous setting.",
+        "fr": "Allumage, luminosité et température du blanc en un seul ordre : pas de flash au réglage précédent.",
+        "de": "Ein, Helligkeit und Weißtemperatur in einem Befehl: kein Aufblitzen mit der alten Einstellung.",
+        "es": "Encendido, brillo y temperatura del blanco en una sola orden: sin destello con el ajuste anterior."
+      },
+      "timeout_seconds": 15,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Light or room",
+            "fr": "Lampe ou pièce",
+            "de": "Lampe oder Raum",
+            "es": "Luz o estancia"
+          },
+          "required": true
+        },
+        {
+          "key": "power",
+          "type": "select",
+          "label": { "en": "Power", "fr": "Allumage", "de": "Schalten", "es": "Encendido" },
+          "required": true,
+          "default": "on",
+          "options": [
+            {
+              "value": "on",
+              "label": { "en": "On", "fr": "Allumer", "de": "Ein", "es": "Encender" }
+            },
+            {
+              "value": "off",
+              "label": { "en": "Off", "fr": "Éteindre", "de": "Aus", "es": "Apagar" }
+            }
+          ]
+        },
+        {
+          "key": "brightness",
+          "type": "number",
+          "label": {
+            "en": "Brightness (%)",
+            "fr": "Luminosité (%)",
+            "de": "Helligkeit (%)",
+            "es": "Brillo (%)"
+          },
+          "required": false,
+          "min": 1,
+          "max": 100
+        },
+        {
+          "key": "temperature",
+          "type": "number",
+          "label": {
+            "en": "White temperature (K)",
+            "fr": "Température du blanc (K)",
+            "de": "Weißtemperatur (K)",
+            "es": "Temperatura del blanco (K)"
+          },
+          "description": {
+            "en": "2000 K (warm) to 7000 K (cool), for the lights that support it.",
+            "fr": "De 2000 K (chaud) à 7000 K (froid), pour les lampes qui le permettent.",
+            "de": "2000 K (warm) bis 7000 K (kalt), für Lampen, die es unterstützen.",
+            "es": "De 2000 K (cálido) a 7000 K (frío), para las luces que lo admiten."
+          },
+          "required": false,
+          "min": 2000,
+          "max": 7000
+        }
+      ],
+      "outputs": [
+        {
+          "key": "applied",
+          "type": "boolean",
+          "label": {
+            "en": "Order sent",
+            "fr": "Ordre envoyé",
+            "de": "Befehl gesendet",
+            "es": "Orden enviada"
+          }
+        }
+      ]
+    },
+    {
+      "key": "refresh_states",
+      "label": {
+        "en": "Read the Cync states now",
+        "fr": "Lire les états Cync maintenant",
+        "de": "Cync-Zustände jetzt lesen",
+        "es": "Leer los estados Cync ahora"
+      },
+      "description": {
+        "en": "Asks every Cync home for the state of its devices, e.g. before a check.",
+        "fr": "Demande à chaque maison Cync l'état de ses appareils, par exemple avant une vérification.",
+        "de": "Fragt jedes Cync-Zuhause nach dem Zustand seiner Geräte, z. B. vor einer Prüfung.",
+        "es": "Pide a cada hogar Cync el estado de sus dispositivos, p. ej. antes de una comprobación."
+      },
+      "timeout_seconds": 15,
+      "outputs": [
+        {
+          "key": "online",
+          "type": "number",
+          "label": {
+            "en": "Devices online",
+            "fr": "Appareils en ligne",
+            "de": "Geräte online",
+            "es": "Dispositivos en línea"
+          }
+        },
+        {
+          "key": "total",
+          "type": "number",
+          "label": {
+            "en": "Devices in total",
+            "fr": "Appareils au total",
+            "de": "Geräte insgesamt",
+            "es": "Dispositivos en total"
+          }
+        }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "key": "cync_status",
+      "label": { "en": "Cync status", "fr": "État Cync", "de": "Cync-Status", "es": "Estado Cync" },
+      "description": {
+        "en": "Cloud connection, devices online and the Wi-Fi relay of each home.",
+        "fr": "Connexion au cloud, appareils en ligne et relais Wi-Fi de chaque maison.",
+        "de": "Cloud-Verbindung, Geräte online und das WLAN-Relais jedes Zuhauses.",
+        "es": "Conexión a la nube, dispositivos en línea y relé Wi-Fi de cada hogar."
+      },
+      "icon": "cloud",
+      "action_timeout_seconds": 60
+    },
+    {
+      "key": "cync_devices",
+      "label": {
+        "en": "Cync devices",
+        "fr": "Appareils Cync",
+        "de": "Cync-Geräte",
+        "es": "Dispositivos Cync"
+      },
+      "description": {
+        "en": "Each device: on with its brightness, off, or offline.",
+        "fr": "Chaque appareil : allumé avec sa luminosité, éteint ou hors ligne.",
+        "de": "Jedes Gerät: an mit Helligkeit, aus oder offline.",
+        "es": "Cada dispositivo: encendido con su brillo, apagado o sin conexión."
+      },
+      "icon": "list",
+      "settings": [
+        {
+          "key": "show",
+          "type": "select",
+          "label": { "en": "Show", "fr": "Afficher", "de": "Anzeigen", "es": "Mostrar" },
+          "required": false,
+          "default": "all",
+          "options": [
+            {
+              "value": "all",
+              "label": {
+                "en": "All devices",
+                "fr": "Tous les appareils",
+                "de": "Alle Geräte",
+                "es": "Todos los dispositivos"
+              }
+            },
+            {
+              "value": "on",
+              "label": {
+                "en": "Devices on",
+                "fr": "Appareils allumés",
+                "de": "Eingeschaltete Geräte",
+                "es": "Dispositivos encendidos"
+              }
+            },
+            {
+              "value": "offline",
+              "label": {
+                "en": "Offline devices",
+                "fr": "Appareils hors ligne",
+                "de": "Offline-Geräte",
+                "es": "Dispositivos sin conexión"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

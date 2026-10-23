@@ -1,6 +1,6 @@
 {
   "name": "gladys-cync",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Gladys Assistant external integration for Cync (GE Lighting) lights, switches and plugs.",
   "type": "module",

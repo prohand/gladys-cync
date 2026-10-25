@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-25
+
 ### Added
 
 - Search keywords for the Gladys catalog (C by GE, Savant, smart bulb, dimmer,
@@ -47,6 +49,7 @@ the notes of the version's GitHub Release.
 - CI (format, lint, tests on Node 22 and 24, store checks, Docker build),
   UI-driven Release workflow, GitHub Releases and Dependabot.
 
-[Unreleased]: https://github.com/prohand/gladys-cync/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/prohand/gladys-cync/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/prohand/gladys-cync/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/prohand/gladys-cync/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/prohand/gladys-cync/releases/tag/v1.0.1

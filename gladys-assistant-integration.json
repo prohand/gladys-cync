@@ -8,8 +8,8 @@
     "de": "Steuere Cync-Lampen (GE Lighting), LED-Streifen, Schalter und Steckdosen mit Gladys.",
     "es": "Controle bombillas, tiras LED, interruptores y enchufes Cync (GE Lighting) desde Gladys."
   },
-  "version": "1.0.2",
-  "docker_image": "ghcr.io/prohand/gladys-cync:1.0.2",
+  "version": "1.1.0",
+  "docker_image": "ghcr.io/prohand/gladys-cync:1.1.0",
   "gladys_version": ">=5.3.0",
   "cover_image": "https://raw.githubusercontent.com/prohand/gladys-cync/main/cover.png",
   "categories": ["lighting"],

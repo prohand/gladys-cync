@@ -7,6 +7,7 @@ Cync-App eingerichtet hast.
 
 ## Bevor du beginnst
 
+- **Gladys 5.3.0** oder neuer.
 - Deine Geräte werden in der **Cync-App** eingerichtet, nicht in Gladys. Prüfe
   zuerst, dass sie dort funktionieren.
 - Jedes Zuhause braucht **mindestens ein Cync-Gerät mit WLAN**, das immer mit

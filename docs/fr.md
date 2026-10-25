@@ -7,6 +7,7 @@ l'application Cync.
 
 ## Avant de commencer
 
+- **Gladys 5.3.0** ou plus récent.
 - Vos appareils s'installent dans l'**application mobile Cync**, pas dans
   Gladys. Vérifiez d'abord qu'ils y fonctionnent.
 - Chaque maison a besoin d'**au moins un appareil Cync Wi-Fi** toujours

@@ -86,7 +86,9 @@ address>')`, a room `gladys.externalIds('room', '<home id>-room-<group id>')`; f
 
 `test/manifest.test.js` ties `gladys-assistant-integration.json` to the code: defaults equal
 `DEFAULT_CONFIG`, every action has an `onAction`, scene action / trigger / widget keys match the
-code, every text exists in the four languages, versions agree. Change both sides together.
+code, every text exists in the four languages, versions agree, `categories` / `keywords` follow the
+store rules and `gladys_version` stays `>=5.3.0` (the floor of `keywords`). Change both sides
+together.
 
 ## Rules
 

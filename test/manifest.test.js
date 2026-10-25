@@ -150,10 +150,76 @@ test('widgets: declared and served, the same keys, at most five', () => {
   );
 });
 
-test('Gladys 5.1 for the capabilities; cloud is the only transport', () => {
-  assert.equal(manifest.gladys_version, '>=5.1.0');
+// The store refuses a manifest whose `gladys_version` floor does not cover every
+// field it declares (older cores reject an unknown field): 5.1.0 for widgets and
+// scenes, 5.3.0 for `keywords` / `countries` / `music`.
+const floorOf = (range) => /^>=(\d+)\.(\d+)\.(\d+)$/.exec(range).slice(1).map(Number);
+const atLeast = (floor, wanted) => {
+  for (let i = 0; i < 3; i += 1) {
+    if (floor[i] !== wanted[i]) {
+      return floor[i] > wanted[i];
+    }
+  }
+  return true;
+};
+
+test('Gladys 5.3 for keywords and the capabilities; cloud is the only transport', () => {
+  assert.equal(manifest.gladys_version, '>=5.3.0');
+  const floor = floorOf(manifest.gladys_version);
+  if (manifest.widgets || manifest.scene_triggers || manifest.scene_actions) {
+    assert.ok(atLeast(floor, [5, 1, 0]), 'widgets and scenes need Gladys >= 5.1.0');
+  }
+  if (manifest.keywords || manifest.countries || manifest.music) {
+    assert.ok(atLeast(floor, [5, 3, 0]), 'keywords, countries and music need Gladys >= 5.3.0');
+  }
   assert.deepEqual(manifest.transports, ['cloud']);
+});
+
+// The store's catalog shelves (Gladys 5.3 added the last four). An unknown key is
+// only dropped with a warning, so a typo would silently cost the shelf.
+const CATEGORIES = [
+  'climate',
+  'lighting',
+  'energy',
+  'security',
+  'multimedia',
+  'appliances',
+  'environment',
+  'protocols',
+  'network',
+  'notifications',
+  'assistants',
+  'services',
+  'transport',
+  'vehicles',
+  'servers',
+  'leisure',
+];
+
+test('categories: one to three shelves of the store vocabulary', () => {
   assert.ok(manifest.categories.length >= 1 && manifest.categories.length <= 3);
+  assert.equal(new Set(manifest.categories).size, manifest.categories.length);
+  for (const category of manifest.categories) {
+    assert.ok(CATEGORIES.includes(category), `unknown category "${category}"`);
+  }
+});
+
+test('keywords: 1 to 10 unique search terms of 2 to 30 characters', () => {
+  const { keywords } = manifest;
+  assert.ok(Array.isArray(keywords) && keywords.length >= 1 && keywords.length <= 10);
+  for (const keyword of keywords) {
+    assert.equal(typeof keyword, 'string');
+    const length = keyword.trim().length;
+    assert.ok(length >= 2 && length <= 30, `keyword "${keyword}" must be 2-30 characters`);
+  }
+  const normalized = keywords.map((keyword) => keyword.trim().toLowerCase());
+  assert.equal(new Set(normalized).size, normalized.length, 'keywords must be unique');
+});
+
+test('countries: none, the Cync devices are sold and driven from anywhere', () => {
+  // A declared list hides the integration from the browse views of every other
+  // country; worldwide is the right default for a hardware brand.
+  assert.equal(manifest.countries, undefined);
 });
 
 test('the user documentation exists in every language', async () => {

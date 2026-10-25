@@ -25,7 +25,7 @@ User documentation: [English](docs/en.md) · [Français](docs/fr.md) · [Deutsch
 | Configuration actions | `send_code`, `verify_code` (two-step sign-in), `test_connection`, `refresh_devices`                                           |
 | Languages             | English, French, German, Spanish — manifest, messages, widgets and documentation                                              |
 
-Requires **Gladys 5.1.0** or later (scene and widget capabilities).
+Requires **Gladys 5.3.0** or later (scene and widget capabilities, catalog search keywords).
 
 ## How it talks to Cync
 

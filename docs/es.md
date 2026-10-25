@@ -7,6 +7,7 @@ la aplicación Cync.
 
 ## Antes de empezar
 
+- **Gladys 5.3.0** o posterior.
 - Sus dispositivos se configuran en la **aplicación móvil Cync**, no en Gladys.
   Compruebe primero que funcionan allí.
 - Cada hogar necesita **al menos un dispositivo Cync con Wi-Fi** siempre

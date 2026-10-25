@@ -6,6 +6,7 @@ smart plugs and the fan controller you set up in the Cync app.
 
 ## Before you start
 
+- **Gladys 5.3.0** or later.
 - Your devices are set up in the **Cync mobile app**, not in Gladys. Check they
   work there first.
 - Each home needs **at least one Cync device with Wi-Fi** that stays powered: a

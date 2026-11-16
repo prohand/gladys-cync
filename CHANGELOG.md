@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-11-16
+
 - Update `@gladysassistant/integration-sdk` to 0.16.1 (security update).
 
 ## [1.1.1] - 2026-11-16
@@ -55,7 +57,8 @@ the notes of the version's GitHub Release.
 - CI (format, lint, tests on Node 22 and 24, store checks, Docker build),
   UI-driven Release workflow, GitHub Releases and Dependabot.
 
-[Unreleased]: https://github.com/prohand/gladys-cync/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/prohand/gladys-cync/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/prohand/gladys-cync/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/prohand/gladys-cync/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/prohand/gladys-cync/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/prohand/gladys-cync/compare/v1.0.1...v1.0.2
